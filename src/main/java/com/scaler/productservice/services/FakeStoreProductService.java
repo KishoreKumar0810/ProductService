@@ -3,10 +3,14 @@ package com.scaler.productservice.services;
 import com.scaler.productservice.dtos.FakeStoreProductDto;
 import com.scaler.productservice.models.Category;
 import com.scaler.productservice.models.Product;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+import java.util.ArrayList;
+import java.util.List;
+
+@Service("fakeStoreProductService")
 public class FakeStoreProductService implements ProductService{
 
     private RestTemplate restTemplate;
@@ -34,5 +38,17 @@ public class FakeStoreProductService implements ProductService{
         );
 
         return convertToProduct(productDto);
+    }
+
+    @Override
+    public List<Product> getAllProducts() {
+        FakeStoreProductDto[] productDto = restTemplate.getForObject(
+                "https://fakestoreapi.com/products/", FakeStoreProductDto[].class
+        );
+        List<Product> productList = new ArrayList<>();
+        for (FakeStoreProductDto product : productDto) {
+            productList.add(convertToProduct(product));
+        }
+        return productList;
     }
 }
